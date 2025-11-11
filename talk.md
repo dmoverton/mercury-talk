@@ -44,6 +44,51 @@ title: "The Mercury Programming Language"
 
 ---
 
+# Logic Programming
+
+- Predicate logic
+- Horn clauses
+- Logical connectives
+- Unification
+- Backtracking
+
+---
+
+# Prolog
+
+```prolog
+% facts
+parent(alice, bob).
+parent(bob, carol).
+
+% rule
+grandparent(A, B) :-
+  parent(A, C),
+  parent(C, B).
+```
+### Grandparent rule in predicate logic
+
+$$
+\begin{align}
+\forall A \forall B~ & \mathrm{grandparent}(A, B) \leftarrow \\
+    &\exists C~\mathrm{parent}(A, C) \land \mathrm{parent}(C, B)
+\end{align}
+$$
+
+---
+
+## Problems with Prolog
+
+- Lack of static types, modes and determinism
+  - No help from compiler to catch potential errors
+  - Hard for compiler to generate efficient code
+  - Negation can be unsound
+  - Requires use of non-logical constructs (such as *cut*) for efficiency
+
+
+---
+
+
 
 ## Example
 
@@ -131,6 +176,7 @@ member(X, [_ | Xs]) :-
  - record types with names fields
  - type classes (but no constructor classes :cry:)
  - existential types
+ - RTTI
 
 ---
  # Example type definitions
@@ -264,3 +310,11 @@ Each mode of a predicate or function is categorised by whether or not it can fai
 | ------------- | --------- | ---------- | ------- |
 | cannot fail   | `erroneous` | `det` | `multi` |
 | can fail      | `failure` | `semidet` | `nondet` |
+
+---
+
+# Module system
+
+---
+
+# Real example: Zipper
