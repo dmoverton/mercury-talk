@@ -37,10 +37,9 @@ title: "The Mercury Programming Language"
 
 ## A Bit of History
 
-- Developed in **1995** at the University of Melbourne  
+- Started in **1995** at the University of Melbourne  
 - Creators: **Zoltan Somogyi, Fergus Henderson, Thomas Conway, et al**  
 - Goal: industrial-strength logic programming  
-- Compiles to C and native code
 
 ---
 
@@ -111,6 +110,50 @@ append [] ys = ys
 append (x:xs) ys = x : append xs ys
 ```
 
+- Relation, not a function, but otherwise similar in structure to Haskell equivalent
+- Prolog syntax for variables (upper case) and function symbols (lower case)
+- Prolog syntax for list cons `[X | Xs]`
+
+---
+
+Can write as a single clause:
+<table>
+<tr>
+<th>Mercury</th><th>Haskell</th>
+</tr>
+<tr>
+<td>
+
+```mercury
+append(Xs, Ys, Zs) :-
+  (
+    Xs = [],
+    Ys = Zs
+  ;
+    Xs = [X | Xs0],
+    append(Xs0, Ys, Zs0),
+    Zs = [X | Zs0]
+  ).
+```
+</td>
+<td>
+
+```haskell
+append xs ys =
+  case xs of
+    []        -> ys
+    (x : xs') ->
+      x : append xs' ys
+```
+</td>
+</tr>
+</table>
+
+- Comma for conjunction (**and**)
+- Semicolon for disjunction (**or**)
+- Unification for pattern matching
+- Disjuncts are non-overlapping because `Xs` unifies with two different list constructors
+
 ---
 
 Could also write `append` as a function:
@@ -170,6 +213,18 @@ member(X, [X | _]).
 member(X, [_ | Xs]) :-
     member(X, Xs).
 ```
+
+Existential quantification:
+ ```mercury
+ ?- some [X] (member(X, [1, 2, 3]), X > 1).
+ true.
+ ```
+
+Universal quantification:
+ ```mercury
+?- all [X] (member(X, [1, 2, 3]) => X > 1).
+fail.
+ ```
 ---
 
 # Mercury types
@@ -180,7 +235,7 @@ member(X, [_ | Xs]) :-
  - record types with names fields
  - type classes (but no constructor classes :cry:)
  - existential types
- - RTTI
+ - RTTI and type reflection
 
 ---
  # Example type definitions
@@ -199,7 +254,7 @@ member(X, [_ | Xs]) :-
 <td>
 
 ```haskell
-data Bool = True ; False
+data Bool = True ; False   
 ```
 
 </td>
@@ -209,14 +264,18 @@ data Bool = True ; False
 <td>
 
 ```mercury
-:- type maybe(T) ---> yes(T) ; no.
+:- type maybe(T)
+        ---> yes(T)
+        ;    no.          
 ```
 
 </td>
 <td>
 
 ```haskell
-data Maybe a = Just a | Nothing
+data Maybe a
+      = Just a
+      | Nothing           
 ```
 </td>
 </tr>
@@ -226,13 +285,13 @@ data Maybe a = Just a | Nothing
 <td>
 
 ```mercury
-:- type width == float.
+:- type width == float.    
 ```
 </td>
 <td>
 
 ```haskell
-type Width = Float
+type Width = Double        
 ```
 </td>
 </tr>
@@ -241,14 +300,16 @@ type Width = Float
 <td>
 
 ```mercury
-:- type counter == counter(int).
+:- type counter
+        ---> counter(int).
 ```
 </td>
 
 <td>
 
 ```haskell
-newtype Counter = Counter Int
+newtype Counter
+        = Counter Int      
 ```
 </td>
 </table>
@@ -418,7 +479,7 @@ main(!IO) :-
 
 :- import_module list, string.
 
-main(IO0, IO) :-
+main(!IO) :-
   ...
 ```
 
