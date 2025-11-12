@@ -402,7 +402,10 @@ main(!IO) :-
 
 - Modules have `interface` and `implementation` sections.
 - Only things declared in the `interface` section are exported.
-- Also supports submodules, either nested or in separate files.
+- There are also submodules, either nested or in separate files.
+
+---
+## Module example
 
 ```mercury
 :- module hello.
@@ -437,6 +440,18 @@ main(IO0, IO) :-
   --->  set(list(T)).
 ```
 
+---
+
+# Tooling
+- `mmc`: Melbourne Mercury Compiler
+- `mdb`: Mercury debugger &mdash; supports `retry`, which is awesome.
+- `mprof`: time and memory profiler
+- standard library: lots of useful data structures
+
+# Implementation
+
+- Backends compiling to C, Java and C#
+- C backend uses Boehm conservatie garbage collector
 ---
 
 # Real example: Zipper
