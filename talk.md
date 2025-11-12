@@ -46,11 +46,11 @@ title: "The Mercury Programming Language"
 
 # Logic Programming
 
-- Predicate logic
-- Horn clauses
-- Logical connectives
-- Unification
-- Backtracking
+* Predicate logic
+* Horn clauses
+* Logical connectives
+* Unification
+* Backtracking
 
 ---
 
@@ -65,6 +65,10 @@ parent(bob, carol).
 grandparent(A, B) :-
   parent(A, C),
   parent(C, B).
+
+% query
+?- grandparent(alice, X).
+X = carol.
 ```
 ### Grandparent rule in predicate logic
 
@@ -313,7 +317,125 @@ Each mode of a predicate or function is categorised by whether or not it can fai
 
 ---
 
+# I/O and unique modes
+
+- Mercury is a *pure*  declarative language, so how do we do I/O?
+- Thread a &ldquo;state of the world&rdquo; through predicates that do I/O
+
+```mercury
+:- pred write_string(string, io, io).
+```
+- But we want to make sure an `io` state is never re-used, even when backtracking.
+```mercury
+:- mode write_string(in, di, uo) is det.
+```
+- `di`: destructive input
+- `uo`: unique output
+```mercury
+:- mode di == unique >> clobbered.
+:- mode uo == free >> unique.
+```
+---
+## Unique modes
+```mercury
+:- mode di == unique >> clobbered.
+:- mode uo == free >> unique.
+```
+- `unique`: a unique reference to this value
+- `clobbered`: no references to the value (it may have been destroyed or destructively updated)
+- The compiler ensures that the `di` argument is a unique reference and is never used again after the call
+- Requires that predicates doing I/O have determinism `det`.
+---
+## I/O example
+```mercury
+:- pred main(io::di, io::uo) is det.
+
+main(IO0, IO) :-
+  io.write_string("What is your name?\n", IO0, IO1),
+  io.read_line_as_string(Result, IO1, IO2),
+  (
+    Result = ok(String),
+    io.format("Hello %s, nice to meet you!\n", [s(strip(String))], IO2, IO)
+  ;
+    Result = eof,
+    io.write_string("Ok, bye!\n", IO2, IO)
+  ;
+    Result = error(Err),
+    io.write_string("Error: ", IO2, IO3),
+    io.print(Err, IO3, IO)
+  ).
+```
+---
+
+## State variables
+
+- Threading those numbered `IOn` variables through the code can get tedious very fast.
+- Haskell uses a state monad to hide the I/O state.
+- Mercury has a difference solution: *state variables*.
+
+---
+
+## State variables
+
+```mercury
+:- pred main(io::di, io::uo) is det.
+
+main(!IO) :-
+  io.write_string("What is your name?\n", !IO),
+  io.read_line_as_string(Result, !IO),
+  (
+    Result = ok(String),
+    io.format("Hello %s, nice to meet you!\n", [s(strip(String))], !IO)
+  ;
+    Result = eof,
+    io.write_string("Ok, bye!\n", !IO)
+  ;
+    Result = error(Err),
+    io.write_string("Error: ", !IO),
+    io.print(Err, !IO)
+  ).
+
+```
+---
+
 # Module system
+
+- Modules have `interface` and `implementation` sections.
+- Only things declared in the `interface` section are exported.
+- Also supports submodules, either nested or in separate files.
+
+```mercury
+:- module hello.
+:- interface.
+:- import_module io.
+
+:- pred main(io::di, io::uo) is det.
+
+:- implementation.
+
+:- import_module list, string.
+
+main(IO0, IO) :-
+  ...
+```
+
+---
+
+## Abstract types
+
+- A type declared in the module interface, but defined in the implementation is an *abstract type*
+
+```mercury
+:- module set.
+:- interface.
+
+:- type set(T).
+
+:- implementation.
+
+:- type set(T)
+  --->  set(list(T)).
+```
 
 ---
 
