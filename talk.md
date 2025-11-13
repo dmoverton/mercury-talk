@@ -16,20 +16,20 @@ title: "The Mercury Programming Language"
 
 # Introduction to Mercury
 
-- Logic/functional programming language
-- Purely declarative
+* Logic/functional programming language
+* Purely declarative
   - no side effects
   - referential transparency
-- Strong static type system
-- Strong mode and determinism systems
-- "Logic programming for the real world"
+* Strong static type system
+* Strong mode and determinism systems
+* "Logic programming for the real world"
 
 ---
 ## Why Another Declarative Language?
 
-- **Prolog:** expressive but dynamically typed and unpredictable  
-- **Haskell:** pure and safe but function-centric  
-- **Mercury:** bridges the gap — *logic + purity + performance*
+* **Prolog:** expressive but dynamically typed and unpredictable
+* **Haskell:** pure and safe but function-centric
+* **Mercury:** bridges the gap — *logic + purity + performance*
 
 > Bringing Haskell-like rigor to the relational world of Prolog.
 
@@ -37,9 +37,9 @@ title: "The Mercury Programming Language"
 
 ## A Bit of History
 
-- Started in **1995** at the University of Melbourne  
-- Creators: **Zoltan Somogyi, Fergus Henderson, Thomas Conway, et al**  
-- Goal: industrial-strength logic programming  
+* Started in **1995** at the University of Melbourne
+* Creators: **Zoltan Somogyi, Fergus Henderson, Thomas Conway, et al**
+* Goal: industrial-strength logic programming
 
 ---
 
@@ -82,11 +82,11 @@ $$
 
 ## Problems with Prolog
 
-- Lack of static types, modes and determinism
-  - No help from compiler to catch potential errors
-  - Hard for compiler to generate efficient code
-  - Negation can be unsound
-  - Requires use of non-logical constructs (such as *cut*) for efficiency
+* Lack of static types, modes and determinism
+  * No help from compiler to catch potential errors
+  * Hard for compiler to generate efficient code
+  * Negation can be unsound
+  * Requires use of non-logical constructs (such as *cut*) for efficiency
 
 
 ---
@@ -110,9 +110,9 @@ append [] ys = ys
 append (x:xs) ys = x : append xs ys
 ```
 
-- Relation, not a function, but otherwise similar in structure to Haskell equivalent
-- Prolog syntax for variables (upper case) and function symbols (lower case)
-- Prolog syntax for list cons `[X | Xs]`
+* Relation, not a function, but otherwise similar in structure to Haskell equivalent
+* Prolog syntax for variables (upper case) and function symbols (lower case)
+* Prolog syntax for list cons `[X | Xs]`
 
 ---
 
@@ -149,10 +149,10 @@ append xs ys =
 </tr>
 </table>
 
-- Comma for conjunction (**and**)
-- Semicolon for disjunction (**or**)
-- Unification for pattern matching
-- Disjuncts are non-overlapping because `Xs` unifies with two different list constructors
+* Comma for conjunction (**and**)
+* Semicolon for disjunction (**or**)
+* Unification for pattern matching
+* Disjuncts are non-overlapping because `Xs` unifies with two different list constructors
 
 ---
 
@@ -228,14 +228,14 @@ fail.
 ---
 
 # Mercury types
- - strong static type system
- - type inference (with ad-hoc overloading)
- - algebraic data types
- - higher order types
- - record types with names fields
- - type classes (but no constructor classes :cry:)
- - existential types
- - RTTI and type reflection
+ * strong static type system
+ * type inference (with ad-hoc overloading)
+ * algebraic data types
+ * higher order types
+ * record types with names fields
+ * type classes (but no constructor classes :cry:)
+ * existential types
+ * RTTI and type reflection
 
 ---
  # Example type definitions
@@ -340,7 +340,7 @@ Ys = [2, 3, 4]
 
 # Modes
 
-- Describe data flow through _instantiation states_ of variables
+* Describe data flow through _instantiation states_ of variables
 
 ```mercury
 :- mode in == ground >> ground.
@@ -348,13 +348,13 @@ Ys = [2, 3, 4]
 :- mode unused == free >> free.
 ```
 
-- Mode declarations for a predicate must give a mode for each argument:
+* Mode declarations for a predicate must give a mode for each argument:
 
 ```mercury
 :- mode add(in, in, out).
 ```
 
-- Functions have a default mode where arguments have mode `in` and the function result has mode `out`, unless otherwise specified.
+* Functions have a default mode where arguments have mode `in` and the function result has mode `out`, unless otherwise specified.
 
 ---
 
@@ -362,12 +362,12 @@ Ys = [2, 3, 4]
 
 Each mode of a predicate or function is categorised by whether or not it can fail and how many solutions it can produce:
 
-- `det`: exactly one solution
-- `semidet`: at most one solution (can fail or succeed once)
-- `multi`: at least one solution
-- `nondet`: zero or more solutions
-- `failure`: no solutions (always fails)
-- `erroneous`: never returns (infinite loop, exception or runtime error)
+* `det`: exactly one solution
+* `semidet`: at most one solution (can fail or succeed once)
+* `multi`: at least one solution
+* `nondet`: zero or more solutions
+* `failure`: no solutions (always fails)
+* `erroneous`: never returns (infinite loop, exception or runtime error)
 
 ---
 
@@ -402,10 +402,10 @@ Each mode of a predicate or function is categorised by whether or not it can fai
 :- mode di == unique >> clobbered.
 :- mode uo == free >> unique.
 ```
-- `unique`: a unique reference to this value
-- `clobbered`: no references to the value (it may have been destroyed or destructively updated)
-- The compiler ensures that the `di` argument is a unique reference and is never used again after the call
-- Requires that predicates doing I/O have determinism `det`.
+* `unique`: a unique reference to this value
+* `clobbered`: no references to the value (it may have been destroyed or destructively updated)
+* The compiler ensures that the `di` argument is a unique reference and is never used again after the call
+* Requires that predicates doing I/O have determinism `det`.
 ---
 ## I/O example
 ```mercury
@@ -430,9 +430,9 @@ main(IO0, IO) :-
 
 ## State variables
 
-- Threading those numbered `IOn` variables through the code can get tedious very fast.
-- Haskell uses a state monad to hide the I/O state.
-- Mercury has a difference solution: *state variables*.
+* Threading those numbered `IOn` variables through the code can get tedious very fast.
+* Haskell uses a state monad to hide the I/O state.
+* Mercury has a difference solution: *state variables*.
 
 ---
 
@@ -461,9 +461,9 @@ main(!IO) :-
 
 # Module system
 
-- Modules have `interface` and `implementation` sections.
-- Only things declared in the `interface` section are exported.
-- There are also submodules, either nested or in separate files.
+* Modules have `interface` and `implementation` sections.
+* Only things declared in the `interface` section are exported.
+* There are also submodules, either nested or in separate files.
 
 ---
 ## Module example
@@ -504,15 +504,17 @@ main(!IO) :-
 ---
 
 # Tooling
-- `mmc`: Melbourne Mercury Compiler
-- `mdb`: Mercury debugger &mdash; supports `retry`, which is awesome.
-- `mprof`: time and memory profiler
-- standard library: lots of useful data structures
+* `mmc`: Melbourne Mercury Compiler
+* `mdb`: Mercury debugger &mdash; supports `retry`, which is awesome.
+* `mprof`: time and memory profiler
+* standard library: lots of useful data structures
+
+---
 
 # Implementation
 
-- Backends compiling to C, Java and C#
-- C backend uses Boehm conservatie garbage collector
+* Backends compiling to C, Java and C#
+* C backend uses Boehm conservative garbage collector
 ---
 
 # Real example: Zipper
