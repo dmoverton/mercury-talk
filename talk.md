@@ -24,6 +24,9 @@ title: "The Mercury Programming Language"
 * Strong mode and determinism systems
 * "Logic programming for the real world"
 
+
+<!-- presenter notes -->
+
 ---
 ## Why Another Declarative Language?
 
@@ -31,7 +34,11 @@ title: "The Mercury Programming Language"
 * **Haskell:** pure and safe but function-centric
 * **Mercury:** bridges the gap — *logic + purity + performance*
 
+<div data-marpit-fragment>
+
 > Bringing Haskell-like rigor to the relational world of Prolog.
+
+</div>
 
 ---
 
@@ -58,18 +65,37 @@ title: "The Mercury Programming Language"
 ```prolog
 % facts
 parent(alice, bob).
+parent(alice, barb).
 parent(bob, carol).
+parent(bob, charlie).
+parent(barb, chris).
+parent(barb, cate).
 
 % rule
 grandparent(A, B) :-
   parent(A, C),
   parent(C, B).
+```
 
+<div data-marpit-fragment>
+
+```prolog
 % query
 ?- grandparent(alice, X).
-X = carol.
+  X = carol ; X = charlie ; X = chris ; X = cate.
 ```
-### Grandparent rule in predicate logic
+
+</div>
+
+--- 
+
+# Predicate logic
+
+```mercury
+grandparent(A, B) :-
+  parent(A, C),
+  parent(C, B).
+```
 
 $$
 \begin{align}
@@ -151,7 +177,7 @@ append xs ys =
 
 * Comma for conjunction (**and**)
 * Semicolon for disjunction (**or**)
-* Unification for pattern matching
+* Unification (`=`) for pattern matching
 * Disjuncts are non-overlapping because `Xs` unifies with two different list constructors
 
 ---
@@ -381,21 +407,29 @@ Each mode of a predicate or function is categorised by whether or not it can fai
 # I/O and unique modes
 
 - Mercury is a *pure*  declarative language, so how do we do I/O?
-- Thread a &ldquo;state of the world&rdquo; through predicates that do I/O
+* Thread a &ldquo;state of the world&rdquo; through predicates that do I/O
+
+<div data-marpit-fragment>
 
 ```mercury
 :- pred write_string(string, io, io).
 ```
-- But we want to make sure an `io` state is never re-used, even when backtracking.
+
+</div>
+
+* But we want to make sure an `io` state is never re-used, even when backtracking.
+
+<div data-marpit-fragment>
+
 ```mercury
 :- mode write_string(in, di, uo) is det.
 ```
-- `di`: destructive input
-- `uo`: unique output
-```mercury
-:- mode di == unique >> clobbered.
-:- mode uo == free >> unique.
-```
+
+</div>
+
+* `di`: destructive input
+* `uo`: unique output
+
 ---
 ## Unique modes
 ```mercury
