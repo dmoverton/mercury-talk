@@ -6,6 +6,14 @@ paginate: true
 title: "The Mercury Programming Language"
 ---
 
+<style>
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Creates two equal-width columns */
+    gap: 20px; /* Space between columns */
+}
+</style>
+
 # The Mercury Programming Language
 
 ## Melbourne Compose Talk November 2025
@@ -44,13 +52,13 @@ title: "The Mercury Programming Language"
 
 ## A Bit of History
 
-* Started in **1995** at the University of Melbourne
+* Started in **1994** at the University of Melbourne
 * Creators: **Zoltan Somogyi, Fergus Henderson, Thomas Conway, et al**
 * Goal: industrial-strength logic programming
 
 ---
 
-# Logic Programming
+# What is Logic Programming?
 
 * Predicate logic
 * Horn clauses
@@ -97,12 +105,16 @@ grandparent(A, B) :-
   parent(C, B).
 ```
 
+<marp-pre>
+
 $$
 \begin{align}
 \forall A \forall B~ & \mathrm{grandparent}(A, B) \leftarrow \\
     &\exists C~\mathrm{parent}(A, C) \land \mathrm{parent}(C, B)
 \end{align}
 $$
+
+</marp-pre>
 
 ---
 
@@ -129,12 +141,17 @@ append([], Ys, Ys).
 append([X | Xs], Ys, [X | Zs]) :-
   append(Xs, Ys, Zs).
 ```
+
+<div data-marpit-fragment>
+
 compare Haskell code:
 ```haskell
 append :: [a] -> [a] -> [a]
 append [] ys = ys
 append (x:xs) ys = x : append xs ys
 ```
+
+</div>
 
 * Relation, not a function, but otherwise similar in structure to Haskell equivalent
 * Prolog syntax for variables (upper case) and function symbols (lower case)
@@ -143,12 +160,11 @@ append (x:xs) ys = x : append xs ys
 ---
 
 Can write as a single clause:
-<table>
-<tr>
-<th>Mercury</th><th>Haskell</th>
-</tr>
-<tr>
-<td>
+
+<div class="grid-container">
+<div>
+
+##### Mercury
 
 ```mercury
 append(Xs, Ys, Zs) :-
@@ -161,8 +177,11 @@ append(Xs, Ys, Zs) :-
     Zs = [X | Zs0]
   ).
 ```
-</td>
-<td>
+
+</div>
+<div>
+
+##### Haskell
 
 ```haskell
 append xs ys =
@@ -171,14 +190,24 @@ append xs ys =
     (x : xs') ->
       x : append xs' ys
 ```
-</td>
-</tr>
-</table>
+
+</div>
+</div>
+
+<div class="grid-container">
+<div>
 
 * Comma for conjunction (**and**)
 * Semicolon for disjunction (**or**)
 * Unification (`=`) for pattern matching
+
+</div>
+<div>
+
 * Disjuncts are non-overlapping because `Xs` unifies with two different list constructors
+</div>
+
+</div>
 
 ---
 
@@ -240,17 +269,32 @@ member(X, [_ | Xs]) :-
     member(X, Xs).
 ```
 
+<div class="grid-container">
+
+<div data-marpit-fragment>
+
 Existential quantification:
  ```mercury
- ?- some [X] (member(X, [1, 2, 3]), X > 1).
+ ?- some [X] (
+      member(X, [1, 2, 3]),
+      X > 1).
  true.
  ```
+ </div>
+
+<div data-marpit-fragment>
 
 Universal quantification:
  ```mercury
-?- all [X] (member(X, [1, 2, 3]) => X > 1).
+?- all [X] (
+    member(X, [1, 2, 3]) =>
+      X > 1).
 fail.
  ```
+ </div>
+
+ </div>
+
 ---
 
 # Mercury types
@@ -258,10 +302,11 @@ fail.
  * type inference (with ad-hoc overloading)
  * algebraic data types
  * higher order types
- * record types with names fields
- * type classes (but no constructor classes :cry:)
+ * record types with named fields
+ * type classes
  * existential types
- * RTTI and type reflection
+ * runtime-type information (reflection)
+ * no higher-kinded types :cry:
 
 ---
  # Example type definitions
@@ -368,17 +413,25 @@ Ys = [2, 3, 4]
 
 * Describe data flow through _instantiation states_ of variables
 
+<div data-marpit-fragment>
+
 ```mercury
 :- mode in == ground >> ground.
 :- mode out == free >> ground.
 :- mode unused == free >> free.
 ```
 
+</div>
+
 * Mode declarations for a predicate must give a mode for each argument:
 
+<div data-marpit-fragment>
+
 ```mercury
-:- mode add(in, in, out).
+:- mode append(in, in, out).
 ```
+
+</div>
 
 * Functions have a default mode where arguments have mode `in` and the function result has mode `out`, unless otherwise specified.
 
@@ -438,7 +491,7 @@ Each mode of a predicate or function is categorised by whether or not it can fai
 ```
 * `unique`: a unique reference to this value
 * `clobbered`: no references to the value (it may have been destroyed or destructively updated)
-* The compiler ensures that the `di` argument is a unique reference and is never used again after the call
+* The compiler ensures that the `di` argument is a unique reference and is never used again after the call.
 * Requires that predicates doing I/O have determinism `det`.
 ---
 ## I/O example
@@ -549,6 +602,18 @@ main(!IO) :-
 
 * Backends compiling to C, Java and C#
 * C backend uses Boehm conservative garbage collector
+
+---
+
+# Who uses Mercury?
+
+- Academic research projects, such as
+  - HAL constraint logic programming language
+  - G12 constraint programming platform
+- Mission Critical IT &mdash; ODASE ontology platform
+- Opturion &mdash; optimisation platform (commercial spin-off from G12)
+- YesLogic &mdash; Prince HTML+CSS to PDF typesetting software
+
 ---
 
 # Real example: Zipper
