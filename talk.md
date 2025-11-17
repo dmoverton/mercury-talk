@@ -116,6 +116,10 @@ $$
 
 </marp-pre>
 
+* Implicit variable quantification
+* `:-` is $\leftarrow$ (reverse implication or &lsquo;if&rsquo;)
+* `,` is $\land$ (logical conjunction or &lsquo;and&rsquo;)
+
 ---
 
 ## Problems with Prolog
@@ -125,13 +129,15 @@ $$
   * Hard for compiler to generate efficient code
   * Negation can be unsound
   * Requires use of non-logical constructs (such as *cut*) for efficiency
+* Impure I/O
+  * Makes it harder to reason about code logically
 
 
 ---
 
 
 
-## Example
+## Mercury example
 
 ```mercury
 :- pred append(list(T), list(T), list(T)).
@@ -154,8 +160,8 @@ append (x:xs) ys = x : append xs ys
 </div>
 
 * Relation, not a function, but otherwise similar in structure to Haskell equivalent
-* Prolog syntax for variables (upper case) and function symbols (lower case)
-* Prolog syntax for list cons `[X | Xs]`
+* Prolog syntax for variables (upper case), function symbols (lower case),
+ and lists `[X | Xs]`
 
 ---
 
@@ -299,8 +305,8 @@ fail.
 
 # Mercury types
  * strong static type system
- * type inference (with ad-hoc overloading)
  * algebraic data types
+ * type inference (with ad-hoc overloading)
  * higher order types
  * record types with named fields
  * type classes
@@ -313,7 +319,7 @@ fail.
 
 <table>
 <tr><th/><th>Mercury</th><th>Haskell</th></tr>
-<tr>
+<tr data-marpit-fragment>
 <th>enum</th>
 <td>
 
@@ -325,12 +331,12 @@ fail.
 <td>
 
 ```haskell
-data Bool = True ; False   
+data Bool = True | False   
 ```
 
 </td>
 </tr>
-<tr>
+<tr data-marpit-fragment>
 <th>polymorphic type</th>
 <td>
 
@@ -351,7 +357,7 @@ data Maybe a
 </td>
 </tr>
 
-<tr>
+<tr data-marpit-fragment>
 <th>type alias</th>
 <td>
 
@@ -366,7 +372,7 @@ type Width = Double
 ```
 </td>
 </tr>
-<tr>
+<tr data-marpit-fragment>
 <th>newtype</th>
 <td>
 
@@ -503,7 +509,8 @@ main(IO0, IO) :-
   io.read_line_as_string(Result, IO1, IO2),
   (
     Result = ok(String),
-    io.format("Hello %s, nice to meet you!\n", [s(strip(String))], IO2, IO)
+    io.format("Hello %s, nice to meet you!\n", [s(strip(String))], IO2, IO3),
+    main(IO3, IO)
   ;
     Result = eof,
     io.write_string("Ok, bye!\n", IO2, IO)
@@ -533,7 +540,8 @@ main(!IO) :-
   io.read_line_as_string(Result, !IO),
   (
     Result = ok(String),
-    io.format("Hello %s, nice to meet you!\n", [s(strip(String))], !IO)
+    io.format("Hello %s, nice to meet you!\n", [s(strip(String))], !IO),
+    main(!IO)
   ;
     Result = eof,
     io.write_string("Ok, bye!\n", !IO)
@@ -607,12 +615,12 @@ main(!IO) :-
 
 # Who uses Mercury?
 
-- Academic research projects, such as
-  - HAL constraint logic programming language
-  - G12 constraint programming platform
-- Mission Critical IT &mdash; ODASE ontology platform
-- Opturion &mdash; optimisation platform (commercial spin-off from G12)
-- YesLogic &mdash; Prince HTML+CSS to PDF typesetting software
+* Academic research projects, such as
+  * HAL constraint logic programming language
+  * G12 constraint programming platform
+* Mission Critical IT &mdash; ODASE ontology platform
+* Opturion &mdash; optimisation platform (commercial spin-off from G12)
+* YesLogic &mdash; Prince HTML+CSS to PDF typesetting software
 
 ---
 
