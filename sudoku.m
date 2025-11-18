@@ -6,7 +6,6 @@
 
 :- pred main(io::di, io::uo) is cc_multi.
 
-
 :- implementation.
 
 :- import_module int, list, map, pair, solutions, string.
@@ -26,7 +25,7 @@ main(!IO) :-
   io.write_string("Problem:\n", !IO),
   print_solution(Problem, !IO),
   io.nl(!IO),
-  ( if sudoku(Problem, Solution) then
+  ( if solve_sudoku(Problem, Solution) then
     io.write_string("Solution:\n", !IO),
     print_solution(Solution, !IO)
   else
@@ -38,6 +37,7 @@ main(!IO) :-
 :- func digits = list(int).
 digits = [1, 2, 3, 4, 5, 6, 7, 8, 9].
 
+% List of possible values a cell can take
 :- type cell == list(int). % Could use a bitmap for improved efficiency
 
 :- func init_cell = cell.
@@ -45,6 +45,7 @@ init_cell = digits.
 
 :- type coord == {int, int}.
 
+% Constraint store
 :- type grid == map(coord, cell).
 
 :- type problem == map(coord, int).
@@ -126,6 +127,15 @@ same_box(Coord0@{X0, Y0}, Coord@{X, Y}) :-
 
 % -------------------------------------------------------------------------------- %
 
+:- pred solve_sudoku(problem::in, solution::out) is nondet.
+
+solve_sudoku(Problem, Solution) :-
+  % Set up constraints
+  map.foldl(set_cell_value, Problem, init_grid, Grid),
+
+  % Find solutions (a.k.a "labelling")
+  solve(Grid, Solution).
+
 :- pred solve(grid::in, solution::out) is nondet.
 
 solve(!.Grid, Solution) :-
@@ -139,12 +149,6 @@ label(Coord, !Grid) :-
   map.search(!.Grid, Coord, Cell),
   member(Value, Cell),
   set_cell_value(Coord, Value, !Grid).
-
-:- pred sudoku(problem::in, solution::out) is nondet.
-
-sudoku(Problem, Solution) :-
-  map.foldl(set_cell_value, Problem, init_grid, Grid),
-  solve(Grid, Solution).
 
 % -------------------------------------------------------------------------------- %
 
@@ -162,7 +166,7 @@ print_row(Solution, Y, !IO) :-
 :- pred print_cell(solution::in, int::in, int::in, io::di, io::uo) is det.
 
 print_cell(Solution, Y, X, !IO) :-
-  ( if Value = map.search(Solution, {X, Y}) then
+  ( if map.search(Solution, {X, Y}, Value) then
     io.format("%d ", [i(Value)], !IO)
   else
     io.write_string("_ ", !IO)
