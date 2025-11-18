@@ -53,34 +53,35 @@ init_cell = digits.
 :- func init_grid = grid.
 
 init_grid =
-  list.foldl(func(X, Grid0) =
-    list.foldl(func(Y, Grid1) =
-      map.set(B1, {X, Y}, init_cell),
-      digits, Grid0),
-    digits,
-    map.init).
+  map.from_assoc_list(solutions(init_pair)).
+
+:- pred init_pair(pair(coord, cell)::out) is nondet.
+
+init_pair({X, Y} - init_cell) :-
+  member(X, digits),
+  member(Y, digits).
 
 % -------------------------------------------------------------------------------- %
 
 % Set cell equal to given value
-:- pred set_cell(coord::in, int::in, grid::in, grid::out) is semidet.
+:- pred set_cell_value(coord::in, int::in, grid::in, grid::out) is semidet.
 
-set_cell(Coord, Value, !Grid) :-
+set_cell_value(Coord, Value, !Grid) :-
   map.search(!.Grid, Coord, Cell0),
   member(Value, Cell0),
   Cell = [Value],
   map.set(Coord, Cell, !Grid),
-  list.foldl(unset_cell(Value), constrained_coords(Coord), !Grid).
+  list.foldl(exclude_value(Value), constrained_coords(Coord), !Grid).
 
 % Set cell not equal to given value
-:- pred unset_cell(int::in, coord::in, grid::in, grid::out) is semidet.
+:- pred exclude_value(int::in, coord::in, grid::in, grid::out) is semidet.
 
-unset_cell(Value, Coord, !Grid) :-
+exclude_value(Value, Coord, !Grid) :-
   map.search(!.Grid, Coord, Cell0),
   ( if list.delete_first(Cell0, Value, Cell) then
     (
       Cell = [Value1],
-      set_cell(Coord, Value1, !Grid)
+      set_cell_value(Coord, Value1, !Grid)
     ;
       Cell = [_, _ | _],
       map.set(Coord, Cell, !Grid)
@@ -137,13 +138,12 @@ solve(!.Grid, Solution) :-
 label(Coord, !Grid) :-
   map.search(!.Grid, Coord, Cell),
   member(Value, Cell),
-  set_cell(Coord, Value, !Grid).
+  set_cell_value(Coord, Value, !Grid).
 
 :- pred sudoku(problem::in, solution::out) is nondet.
 
 sudoku(Problem, Solution) :-
-  Grid = init_grid,
-  map.foldl(set_cell, Problem, Grid, Grid),
+  map.foldl(set_cell_value, Problem, init_grid, Grid),
   solve(Grid, Solution).
 
 % -------------------------------------------------------------------------------- %
