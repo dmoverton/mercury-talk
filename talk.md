@@ -498,7 +498,12 @@ Each mode of a predicate or function is categorised by whether or not it can fai
 * `unique`: a unique reference to this value
 * `clobbered`: no references to the value (it may have been destroyed or destructively updated)
 * The compiler ensures that the `di` argument is a unique reference and is never used again after the call.
-* Requires that predicates doing I/O have determinism `det`.
+* Requires that predicates doing I/O have determinism `det`*.
+
+<div>
+* or <code>cc_multi</code>
+</div>
+
 ---
 ## I/O example
 ```mercury
