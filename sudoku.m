@@ -33,58 +33,63 @@ main(!IO) :-
     io.write_string("No solution found!\n", !IO)
   ).
 
+% -------------------------------------------------------------------------------- %
+
 :- func digits = list(int).
 digits = [1, 2, 3, 4, 5, 6, 7, 8, 9].
 
-:- type square == list(int). % Could use a bitmap for improved efficiency
+:- type cell == list(int). % Could use a bitmap for improved efficiency
 
-:- func init_square = square.
-init_square = digits.
+:- func init_cell = cell.
+init_cell = digits.
 
 :- type coord == {int, int}.
 
-:- type board == map(coord, square).
+:- type grid == map(coord, cell).
 
 :- type problem == map(coord, int).
 :- type solution == map(coord, int).
 
-:- func init_board = board.
+:- func init_grid = grid.
 
-:- type constraint == pred(board, board).
-:- inst constraint == (pred(in, out) is semidet).
+init_grid =
+  list.foldl(func(X, Grid0) =
+    list.foldl(func(Y, Grid1) =
+      map.set(B1, {X, Y}, init_cell),
+      digits, Grid0),
+    digits,
+    map.init).
 
-init_board =
-  list.foldl(func(X, B0) =
-     list.foldl(func(Y, B1) = map.set(B1, {X, Y}, init_square), digits, B0),
-   digits,
-   map.init).
+% -------------------------------------------------------------------------------- %
 
-% Set square equal to given value
-:- pred set_square(coord::in, int::in, board::in, board::out) is semidet.
+% Set cell equal to given value
+:- pred set_cell(coord::in, int::in, grid::in, grid::out) is semidet.
 
-set_square(Coord, Value, !B) :-
-  map.search(!.B, Coord, Square0),
-  member(Value, Square0),
-  Square = [Value],
-  map.set(Coord, Square, !B),
-  list.foldl(unset_square(Value), constrained_coords(Coord), !B).
+set_cell(Coord, Value, !Grid) :-
+  map.search(!.Grid, Coord, Cell0),
+  member(Value, Cell0),
+  Cell = [Value],
+  map.set(Coord, Cell, !Grid),
+  list.foldl(unset_cell(Value), constrained_coords(Coord), !Grid).
 
-% Set square not equal to given value
-:- pred unset_square(int::in, coord::in, board::in, board::out) is semidet.
+% Set cell not equal to given value
+:- pred unset_cell(int::in, coord::in, grid::in, grid::out) is semidet.
 
-unset_square(Value, Coord, !B) :-
-  map.search(!.B, Coord, Square0),
-  ( if list.delete_first(Square0, Value, Square) then
+unset_cell(Value, Coord, !Grid) :-
+  map.search(!.Grid, Coord, Cell0),
+  ( if list.delete_first(Cell0, Value, Cell) then
     (
-      Square = [Value1],
-      set_square(Coord, Value1, !B)
+      Cell = [Value1],
+      set_cell(Coord, Value1, !Grid)
     ;
-      Square = [_, _ | _],
-      map.set(Coord, Square, !B)
+      Cell = [_, _ | _],
+      map.set(Coord, Cell, !Grid)
     )
   else
     true
   ).
+
+% -------------------------------------------------------------------------------- %
 
 :- func constrained_coords(coord) = list(coord).
 
@@ -118,27 +123,30 @@ same_box(Coord0@{X0, Y0}, Coord@{X, Y}) :-
   (Y - 1) / 3 = (Y0 - 1) / 3,
   Coord \= Coord0.
 
+% -------------------------------------------------------------------------------- %
 
-:- pred solve(board::in, solution::out) is nondet.
+:- pred solve(grid::in, solution::out) is nondet.
 
-solve(!.Board, Solution) :-
-  Coords = map.keys(!.Board),
-  foldl(label, Coords, !Board),
-  map.map_values_only(list.head, !.Board, Solution).
+solve(!.Grid, Solution) :-
+  Coords = map.keys(!.Grid),
+  foldl(label, Coords, !Grid),
+  map.map_values_only(list.head, !.Grid, Solution).
 
-:- pred label(coord::in, board::in, board::out) is nondet.
+:- pred label(coord::in, grid::in, grid::out) is nondet.
 
-label(Coord, !B) :-
-  map.search(!.B, Coord, Square),
-  member(Value, Square),
-  set_square(Coord, Value, !B).
+label(Coord, !Grid) :-
+  map.search(!.Grid, Coord, Cell),
+  member(Value, Cell),
+  set_cell(Coord, Value, !Grid).
 
 :- pred sudoku(problem::in, solution::out) is nondet.
 
 sudoku(Problem, Solution) :-
-  Board0 = init_board,
-  map.foldl(set_square, Problem, Board0, Board1),
-  solve(Board1, Solution).
+  Grid = init_grid,
+  map.foldl(set_cell, Problem, Grid, Grid),
+  solve(Grid, Solution).
+
+% -------------------------------------------------------------------------------- %
 
 :- pred print_solution(solution::in, io::di, io::uo) is det.
 
@@ -148,12 +156,12 @@ print_solution(Solution, !IO) :-
 :- pred print_row(solution::in, int::in, io::di, io::uo) is det.
 
 print_row(Solution, Y, !IO) :-
-  list.foldl(print_square(Solution, Y), digits, !IO),
+  list.foldl(print_cell(Solution, Y), digits, !IO),
   io.nl(!IO).
 
-:- pred print_square(solution::in, int::in, int::in, io::di, io::uo) is det.
+:- pred print_cell(solution::in, int::in, int::in, io::di, io::uo) is det.
 
-print_square(Solution, Y, X, !IO) :-
+print_cell(Solution, Y, X, !IO) :-
   ( if Value = map.search(Solution, {X, Y}) then
     io.format("%d ", [i(Value)], !IO)
   else
