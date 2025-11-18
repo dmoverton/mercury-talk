@@ -118,12 +118,13 @@ same_column({X, Y0}, {X, Y}) :-
   member(Y, digits),
   Y \= Y0.
 
-same_box(Coord0@{X0, Y0}, Coord@{X, Y}) :-
+same_box({X0, Y0}, {X, Y}) :-
   member(X, digits),
+  X \= X0,
   (X - 1) / 3 = (X0 - 1) / 3,
   member(Y, digits),
-  (Y - 1) / 3 = (Y0 - 1) / 3,
-  Coord \= Coord0.
+  Y \= Y0,
+  (Y - 1) / 3 = (Y0 - 1) / 3.
 
 % -------------------------------------------------------------------------------- %
 
@@ -133,7 +134,7 @@ solve_sudoku(Problem, Solution) :-
   % Set up constraints
   map.foldl(set_cell_value, Problem, init_grid, Grid),
 
-  % Find solutions (a.k.a "labelling")
+  % Search for solutions (a.k.a "labelling")
   solve(Grid, Solution).
 
 :- pred solve(grid::in, solution::out) is nondet.
