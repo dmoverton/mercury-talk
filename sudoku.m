@@ -161,7 +161,12 @@ print_solution(Solution, !IO) :-
 
 print_row(Solution, Y, !IO) :-
   list.foldl(print_cell(Solution, Y), digits, !IO),
-  io.nl(!IO).
+  io.nl(!IO),
+  ( if ( Y = 3 ; Y = 6) then
+    io.write_string("------+-------+------\n", !IO)
+  else
+    true
+  ).
 
 :- pred print_cell(solution::in, int::in, int::in, io::di, io::uo) is det.
 
@@ -170,5 +175,10 @@ print_cell(Solution, Y, X, !IO) :-
     io.format("%d ", [i(Value)], !IO)
   else
     io.write_string("_ ", !IO)
+  ),
+  ( if (X = 3 ; X = 6) then
+    io.write_string("| ", !IO)
+  else
+    true
   ).
 
