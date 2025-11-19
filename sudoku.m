@@ -60,8 +60,8 @@ init_store =
 :- pred init_pair(pair(coord, cell)::out) is nondet.
 
 init_pair({X, Y} - init_cell) :-
-  member(X, digits),
-  member(Y, digits).
+  list.member(X, digits),
+  list.member(Y, digits).
 
 % -------------------------------------------------------------------------------- %
 
@@ -70,7 +70,7 @@ init_pair({X, Y} - init_cell) :-
 
 set_cell_value(Coord, Value, !Store) :-
   map.search(!.Store, Coord, Cell0),
-  member(Value, Cell0),
+  list.member(Value, Cell0),
   Cell = [Value],
   map.set(Coord, Cell, !Store),
   list.foldl(exclude_value(Value), constrained_coords(Coord), !Store).
@@ -82,11 +82,11 @@ exclude_value(Value, Coord, !Store) :-
   map.search(!.Store, Coord, Cell0),
   ( if list.delete_first(Cell0, Value, Cell) then
     (
-      Cell = [Value1],
-      set_cell_value(Coord, Value1, !Store)
-    ;
       Cell = [_, _ | _],
       map.set(Coord, Cell, !Store)
+    ;
+      Cell = [Value1],
+      set_cell_value(Coord, Value1, !Store)
     )
   else
     true
@@ -112,18 +112,18 @@ constrained_coord(Coord0, Coord) :-
 :- pred same_box(coord::in, coord::out) is nondet.
 
 same_row({X0, Y}, {X, Y}) :-
-  member(X, digits),
+  list.member(X, digits),
   X \= X0.
 
 same_column({X, Y0}, {X, Y}) :-
-  member(Y, digits),
+  list.member(Y, digits),
   Y \= Y0.
 
 same_box({X0, Y0}, {X, Y}) :-
-  member(X, digits),
+  list.member(X, digits),
   X \= X0,
   (X - 1) / 3 = (X0 - 1) / 3,
-  member(Y, digits),
+  list.member(Y, digits),
   Y \= Y0,
   (Y - 1) / 3 = (Y0 - 1) / 3.
 
@@ -142,14 +142,14 @@ solve_sudoku(Problem, Solution) :-
 
 solve(!.Store, Solution) :-
   Coords = map.keys(!.Store),
-  foldl(label, Coords, !Store),
+  list.foldl(label, Coords, !Store),
   map.map_values_only(list.head, !.Store, Solution).
 
 :- pred label(coord::in, store::in, store::out) is nondet.
 
 label(Coord, !Store) :-
   map.search(!.Store, Coord, Cell),
-  member(Value, Cell),
+  list.member(Value, Cell),
   set_cell_value(Coord, Value, !Store).
 
 % -------------------------------------------------------------------------------- %
