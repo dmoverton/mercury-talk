@@ -159,10 +159,10 @@ label(Coord, !Store) :-
 print_grid(Grid, !IO) :-
   list.foldl(print_row(Grid), digits, !IO).
 
-:- pred print_row(solution::in, int::in, io::di, io::uo) is det.
+:- pred print_row(grid::in, int::in, io::di, io::uo) is det.
 
-print_row(Solution, Y, !IO) :-
-  list.foldl(print_cell(Solution, Y), digits, !IO),
+print_row(Grid, Y, !IO) :-
+  list.foldl(print_cell(Grid, Y), digits, !IO),
   io.nl(!IO),
   ( if ( Y = 3 ; Y = 6) then
     io.write_string("------+-------+------\n", !IO)
@@ -170,10 +170,10 @@ print_row(Solution, Y, !IO) :-
     true
   ).
 
-:- pred print_cell(solution::in, int::in, int::in, io::di, io::uo) is det.
+:- pred print_cell(grid::in, int::in, int::in, io::di, io::uo) is det.
 
-print_cell(Solution, Y, X, !IO) :-
-  ( if map.search(Solution, {X, Y}, Value) then
+print_cell(Grid, Y, X, !IO) :-
+  ( if map.search(Grid, {X, Y}, Value) then
     io.format("%d ", [i(Value)], !IO)
   else
     io.write_string("_ ", !IO)
