@@ -23,11 +23,11 @@ main(!IO) :-
     {1, 9} - 5, {2, 9} - 7,                                     {6, 9} - 6,             {8, 9} - 8, {9, 9} - 1
   ]),
   io.write_string("Problem:\n", !IO),
-  print_solution(Problem, !IO),
+  print_grid(Problem, !IO),
   io.nl(!IO),
   ( if solve_sudoku(Problem, Solution) then
     io.write_string("Solution:\n", !IO),
-    print_solution(Solution, !IO)
+    print_grid(Solution, !IO)
   else
     io.write_string("No solution found!\n", !IO)
   ).
@@ -46,14 +46,15 @@ init_cell = digits.
 :- type coord == {int, int}.
 
 % Constraint store
-:- type grid == map(coord, cell).
+:- type store == map(coord, cell).
 
-:- type problem == map(coord, int).
-:- type solution == map(coord, int).
+:- type grid == map(coord, int).
+:- type problem == grid.
+:- type solution == grid.
 
-:- func init_grid = grid.
+:- func init_store = store.
 
-init_grid =
+init_store =
   map.from_assoc_list(solutions(init_pair)).
 
 :- pred init_pair(pair(coord, cell)::out) is nondet.
@@ -65,27 +66,27 @@ init_pair({X, Y} - init_cell) :-
 % -------------------------------------------------------------------------------- %
 
 % Set cell equal to given value
-:- pred set_cell_value(coord::in, int::in, grid::in, grid::out) is semidet.
+:- pred set_cell_value(coord::in, int::in, store::in, store::out) is semidet.
 
-set_cell_value(Coord, Value, !Grid) :-
-  map.search(!.Grid, Coord, Cell0),
+set_cell_value(Coord, Value, !Store) :-
+  map.search(!.Store, Coord, Cell0),
   member(Value, Cell0),
   Cell = [Value],
-  map.set(Coord, Cell, !Grid),
-  list.foldl(exclude_value(Value), constrained_coords(Coord), !Grid).
+  map.set(Coord, Cell, !Store),
+  list.foldl(exclude_value(Value), constrained_coords(Coord), !Store).
 
 % Set cell not equal to given value
-:- pred exclude_value(int::in, coord::in, grid::in, grid::out) is semidet.
+:- pred exclude_value(int::in, coord::in, store::in, store::out) is semidet.
 
-exclude_value(Value, Coord, !Grid) :-
-  map.search(!.Grid, Coord, Cell0),
+exclude_value(Value, Coord, !Store) :-
+  map.search(!.Store, Coord, Cell0),
   ( if list.delete_first(Cell0, Value, Cell) then
     (
       Cell = [Value1],
-      set_cell_value(Coord, Value1, !Grid)
+      set_cell_value(Coord, Value1, !Store)
     ;
       Cell = [_, _ | _],
-      map.set(Coord, Cell, !Grid)
+      map.set(Coord, Cell, !Store)
     )
   else
     true
@@ -132,31 +133,31 @@ same_box({X0, Y0}, {X, Y}) :-
 
 solve_sudoku(Problem, Solution) :-
   % Set up constraints
-  map.foldl(set_cell_value, Problem, init_grid, Grid),
+  map.foldl(set_cell_value, Problem, init_store, Store),
 
   % Search for solutions (a.k.a "labelling")
-  solve(Grid, Solution).
+  solve(Store, Solution).
 
-:- pred solve(grid::in, solution::out) is nondet.
+:- pred solve(store::in, solution::out) is nondet.
 
-solve(!.Grid, Solution) :-
-  Coords = map.keys(!.Grid),
-  foldl(label, Coords, !Grid),
-  map.map_values_only(list.head, !.Grid, Solution).
+solve(!.Store, Solution) :-
+  Coords = map.keys(!.Store),
+  foldl(label, Coords, !Store),
+  map.map_values_only(list.head, !.Store, Solution).
 
-:- pred label(coord::in, grid::in, grid::out) is nondet.
+:- pred label(coord::in, store::in, store::out) is nondet.
 
-label(Coord, !Grid) :-
-  map.search(!.Grid, Coord, Cell),
+label(Coord, !Store) :-
+  map.search(!.Store, Coord, Cell),
   member(Value, Cell),
-  set_cell_value(Coord, Value, !Grid).
+  set_cell_value(Coord, Value, !Store).
 
 % -------------------------------------------------------------------------------- %
 
-:- pred print_solution(solution::in, io::di, io::uo) is det.
+:- pred print_grid(grid::in, io::di, io::uo) is det.
 
-print_solution(Solution, !IO) :-
-  list.foldl(print_row(Solution), digits, !IO).
+print_grid(Grid, !IO) :-
+  list.foldl(print_row(Grid), digits, !IO).
 
 :- pred print_row(solution::in, int::in, io::di, io::uo) is det.
 
