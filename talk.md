@@ -22,12 +22,13 @@ title: "The Mercury Programming Language"
 
 ---
 
-# Introduction to Mercury
+# What is Mercury?
 
 * Logic/functional programming language
 * Purely declarative
   - no side effects
   - referential transparency
+* Strict (i.e. not lazy)
 * Strong static type system
 * Strong mode and determinism systems
 * "Logic programming for the real world"
@@ -97,7 +98,7 @@ The first logic programming systems (forerunners of Prolog) were developed in th
 -->
 ---
 
-# Prolog
+## Prolog
 
 ```prolog
 % facts
@@ -130,7 +131,7 @@ rule: grandparent of A is B if there is a C such that parent of A is C and paren
 
 --- 
 
-# Predicate logic
+## Predicate logic
 
 ```prolog
 grandparent(A, C) :-
@@ -170,7 +171,7 @@ $$
 
 
 
-## Mercury example
+# Mercury example
 
 ```mercury
 :- pred append(list(T), list(T), list(T)).
@@ -337,19 +338,31 @@ fail.
 
 ---
 
-# Mercury types
- * strong static type system
- * algebraic data types
- * type inference (with ad-hoc overloading)
- * higher order types
- * record types with named fields
- * type classes
- * existential types
- * runtime-type information (reflection)
- * no higher-kinded types :cry:
+# Types
+
+Features of the Mercury type system:
+
+<div class="grid-container">
+<div>
+
+ - strong static type system
+ - algebraic data types
+ - subtypes
+ - type inference (with ad-hoc overloading)
+ - higher order types
+ </div>
+ <div>
+
+ - record types with named fields
+ - type classes
+ - existential types
+ - runtime type information (reflection)
+ - no higher-kinded types :cry:
+ </div>
+ </div>
 
 ---
- # Example type definitions
+## Example type definitions
 
 <table>
 <tr><th/><th>Mercury</th><th>Haskell</th></tr>
@@ -640,24 +653,20 @@ main(!IO) :-
 
 # Tooling
 * `mmc`: Melbourne Mercury Compiler
-* `mdb`: Mercury debugger &mdash; supports `retry`, which is awesome.
+  - Backends targetting C, Java and C#
+  - C backend uses Boehm GC
+* `mdb`: Mercury debugger
+  - supports `retry`, which is awesome.
 * `mprof`: time and memory profiler
 * standard library: lots of useful data structures
-
----
-
-# Implementation
-
-* Backends compiling to C, Java and C#
-* C backend uses Boehm conservative garbage collector
 
 ---
 
 # Who uses Mercury?
 
 * Academic research projects, such as
-  * HAL constraint logic programming language
-  * G12 constraint programming platform
+  * HAL constraint logic programming language (Melbourne/Monash Uni)
+  * G12 constraint programming platform (NICTA)
 * Mission Critical IT &mdash; ODASE ontology platform
 * Opturion &mdash; optimisation platform (commercial spin-off from G12)
 * YesLogic &mdash; Prince HTML+CSS to PDF typesetting software
