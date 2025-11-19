@@ -33,9 +33,17 @@ title: "The Mercury Programming Language"
 * "Logic programming for the real world"
 
 
-<!-- presenter notes -->
+<!-- presenter notes
 
----
+What is Mercury?
+Mercury is a programming language that combines logic programming and functional programming.
+It is a pure declarative language. That means there are no side-effects, and that it is referentially transparent.
+It has a strong static type system - based on ML / Haskell Hindley-Milner system.
+
+
+-->
+
+<!-- ---
 ## Why Another Declarative Language?
 
 * **Prolog:** expressive but dynamically typed and unpredictable
@@ -46,7 +54,7 @@ title: "The Mercury Programming Language"
 
 > Bringing Haskell-like rigor to the relational world of Prolog.
 
-</div>
+</div> -->
 
 ---
 
@@ -55,17 +63,37 @@ title: "The Mercury Programming Language"
 * Started in **1994** at the University of Melbourne
 * Creators: **Zoltan Somogyi, Fergus Henderson, Thomas Conway, et al**
 * Goal: industrial-strength logic programming
+* Original compiler written in the intersection of Mercury and NU-Prolog until is could bootstrap itself
+* Became a focus of PL / LP research at Melbourne, Monash and RMIT, as well as further afield (KU Leuven, Belgium; Uppsala, Sweden)
+* Several commercial users
+* No longer an active research project, but still under development by Zoltan and others
 
+<!--
+The Mercury project started at Melbourne Uni in 1994.
+It came out of earlier work by Zoltan on typed logic programming, combined with Fergus's honours thesis on strong mode systems.
+They were joined by another student Tom Conway who wrote the original code generator.
+The goal of the project was to create a logic programming language that was suitable for industrial applications.
+The Mercury compiler is written in Mercury. Until it could bootstrap they used the intersection between Mecury and NU-Prolog.
+A decent size research group developed around the language, and Melbourne Uni as weill as Monash and RMIT, and even attracted 
+interest from further afield, e.g. KU Leuven in Belgium and Uppsala in Sweden.
+There was also interest from several commercial users, some of whom still use the language today.
+These days, there is no longer an active research group based around Mercury, but it is still maintained by Zoltan and several others.
+-->
 ---
 
 # What is Logic Programming?
 
-* Predicate logic
-* Horn clauses
+* Developed in the 1970s based on predicate logic
+* Clauses (facts and rules)
 * Logical connectives
 * Unification
-* Backtracking
+* Backtracking for search
 
+<!--
+Ok, so what is logic programming?
+It is programming based on predicate logic.
+The first logic programming systems (forerunners of Prolog) were developed in the 1970s.
+-->
 ---
 
 # Prolog
@@ -92,6 +120,10 @@ grandparent(A, B) :-
 ?- grandparent(alice, X).
   X = carol ; X = charlie ; X = chris ; X = cate.
 ```
+
+<!--
+rule: grandparent of A is B if there is a C such that parent of A is C and parent of C is B.
+-->
 
 </div>
 
@@ -129,7 +161,7 @@ $$
   * Hard for compiler to generate efficient code
   * Negation can be unsound
   * Requires use of non-logical constructs (such as *cut*) for efficiency
-* Impure I/O
+* Impure features, e.g. I/O
   * Makes it harder to reason about code logically
 
 
@@ -217,7 +249,7 @@ append xs ys =
 
 ---
 
-Could also write `append` as a function:
+**Aside:** Mercury also has functions so we could write `append` as a function:
 ```mercury
 :- func append(list(T), list(T)) = list(T).
 
@@ -230,10 +262,11 @@ append :: [a] -> [a] -> [a]
 append [] ys = ys
 append (x:xs) ys = x : append xs ys
 ```
+but ...
 
 ---
 
-... but `append` as a predicate can have other *modes*:
+... `append` as a predicate can have other *modes*:
 
 ```mercury
 :- pred append(list(T), list(T), list(T)).
@@ -268,7 +301,7 @@ Solution space explored through depth-first search and backtracking.
 ```mercury
 :- pred member(T, list(T)).
 :- mode member(in, in) is semidet.
-:- mode member(in, out) is nondet.
+:- mode member(out, in) is nondet.
 
 member(X, [X | _]).
 member(X, [_ | Xs]) :-
@@ -404,6 +437,9 @@ map(P, [X | Xs], [Y | Ys]) :-
   P(X, Y),
   map(P, Xs, Ys).
 ```
+
+<div data-marpit-fragment>
+
 Currying
 ```mercury
 :- pred add(int, int, int).
@@ -412,6 +448,8 @@ Currying
 ?- map(add(1), [1, 2, 3], Ys).
 Ys = [2, 3, 4]
 ```
+
+</div>
 
 ---
 
