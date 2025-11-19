@@ -84,10 +84,11 @@ These days, there is no longer an active research group based around Mercury, bu
 # What is Logic Programming?
 
 * Developed in the 1970s based on predicate logic
-* Clauses (facts and rules)
-* Logical connectives
-* Unification
-* Backtracking for search
+* Key features:
+  * Clauses (facts and rules)
+  * Logical connectives (and, or, not)
+  * Unification
+  * Backtracking for search
 
 <!--
 Ok, so what is logic programming?
@@ -108,9 +109,9 @@ parent(barb, chris).
 parent(barb, cate).
 
 % rule
-grandparent(A, B) :-
-  parent(A, C),
-  parent(C, B).
+grandparent(A, C) :-
+  parent(A, B),
+  parent(B, C).
 ```
 
 <div data-marpit-fragment>
@@ -131,18 +132,18 @@ rule: grandparent of A is B if there is a C such that parent of A is C and paren
 
 # Predicate logic
 
-```mercury
-grandparent(A, B) :-
-  parent(A, C),
-  parent(C, B).
+```prolog
+grandparent(A, C) :-
+  parent(A, B),
+  parent(B, C).
 ```
 
 <marp-pre>
 
 $$
 \begin{align}
-\forall A \forall B~ & \mathrm{grandparent}(A, B) \leftarrow \\
-    &\exists C~\mathrm{parent}(A, C) \land \mathrm{parent}(C, B)
+\forall A \forall C~ & \mathrm{grandparent}(A, C) \leftarrow \\
+    &\exists B~\mathrm{parent}(A, B) \land \mathrm{parent}(B, C)
 \end{align}
 $$
 
@@ -664,3 +665,5 @@ main(!IO) :-
 ---
 
 # Example program: Sudoku
+
+![image](Sudoku.png)
