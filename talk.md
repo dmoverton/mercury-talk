@@ -52,7 +52,7 @@ It has a strong static type system - based on ML / Haskell Hindley-Milner system
 * Started in **1994** at the University of Melbourne
 * Creators: **Zoltan Somogyi, Fergus Henderson, Thomas Conway**, et al.
 * Goal: industrial-strength logic programming
-* Original compiler written in the intersection of Mercury and NU-Prolog until is could bootstrap itself
+* Original compiler written in the intersection of Mercury and NU-Prolog until it could bootstrap itself
 * Became a focus of PL / LP research at Melbourne, Monash and RMIT, as well as further afield (KU Leuven, Belgium; Uppsala, Sweden)
 * Several commercial users
 * No longer an active research project, but still under development by Zoltan and others
