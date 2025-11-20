@@ -3,7 +3,8 @@ marp: true
 theme: default
 class: lead
 paginate: true
-title: "The Mercury Programming Language"
+title: The Mercury Programming Language
+author: David Overton
 ---
 
 <style>
@@ -16,7 +17,7 @@ title: "The Mercury Programming Language"
 
 # The Mercury Programming Language
 
-## Melbourne Compose Talk November 2025
+## Melbourne Compose Talk, November 2025
 
 ### David Overton
 
@@ -44,25 +45,12 @@ It has a strong static type system - based on ML / Haskell Hindley-Milner system
 
 -->
 
-<!-- ---
-## Why Another Declarative Language?
-
-* **Prolog:** expressive but dynamically typed and unpredictable
-* **Haskell:** pure and safe but function-centric
-* **Mercury:** bridges the gap — *logic + purity + performance*
-
-<div data-marpit-fragment>
-
-> Bringing Haskell-like rigor to the relational world of Prolog.
-
-</div> -->
-
 ---
 
 ## A Bit of History
 
 * Started in **1994** at the University of Melbourne
-* Creators: **Zoltan Somogyi, Fergus Henderson, Thomas Conway, et al**
+* Creators: **Zoltan Somogyi, Fergus Henderson, Thomas Conway**, et al.
 * Goal: industrial-strength logic programming
 * Original compiler written in the intersection of Mercury and NU-Prolog until is could bootstrap itself
 * Became a focus of PL / LP research at Melbourne, Monash and RMIT, as well as further afield (KU Leuven, Belgium; Uppsala, Sweden)
@@ -665,8 +653,8 @@ main(!IO) :-
 # Who uses Mercury?
 
 * Academic research projects, such as
-  * HAL constraint logic programming language (Melbourne/Monash Uni)
-  * G12 constraint programming platform (NICTA)
+  - HAL constraint logic programming language (Melbourne/Monash Uni)
+  - G12 constraint programming platform (NICTA)
 * Mission Critical IT &mdash; ODASE ontology platform
 * Opturion &mdash; optimisation platform (commercial spin-off from G12)
 * YesLogic &mdash; Prince HTML+CSS to PDF typesetting software
