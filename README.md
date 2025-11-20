@@ -4,6 +4,7 @@ Slides and sample code from my [talk to the Melbourne Compose Group](https://lum
 
 ## Files
 - `talk.md`: [Marp](https://marp.app/) markdown for my talk slides
+- `talk.pdf`: Rendered PDF of the above
 - `hello.m`: sample Mercury program doing I/O
 - `sudoku.m`: sample Mercury program for solving Sudoku
 

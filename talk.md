@@ -32,7 +32,7 @@ author: David Overton
 * Strict (i.e. not lazy)
 * Strong static type system
 * Strong mode and determinism systems
-* "Logic programming for the real world"
+* Efficient execution model
 
 
 <!-- presenter notes
